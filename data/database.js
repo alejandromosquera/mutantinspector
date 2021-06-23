@@ -1,6 +1,6 @@
 var sqlite3 = require('sqlite3').verbose()
 
-const DBSOURCE = "db.sqlite"
+const DBSOURCE = ":memory:"
 
 let db = new sqlite3.Database(DBSOURCE, (err) => {
     if (err) {
@@ -22,6 +22,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             });
     }
 });
+
 
 
 module.exports = db
