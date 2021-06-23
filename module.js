@@ -62,14 +62,34 @@ var searchDiagonal = function(dna, bottomToTop, contiguosLettersCount) {
     }
     return patterns;
 }
-module.exports = function(dna) {
-    let contiguosLettersCount = 4;
-    var horizontalPatterns = searchHorizontal(dna, contiguosLettersCount);
-    var verticalPatterns = searchVertical(dna, contiguosLettersCount);
-    var diagonalTopBottomPatterns = searchDiagonal(dna, false, contiguosLettersCount);
-    var diagonalBottomTopPatterns = searchDiagonal(dna, true, contiguosLettersCount);
-    return horizontalPatterns
-        .concat(verticalPatterns)
-        .concat(diagonalTopBottomPatterns)
-        .concat(diagonalBottomTopPatterns).length > 1;
+
+module.exports = {
+    validateInput: function(input) {
+        if (!(input instanceof Array)) {
+            throw "input is not array";
+        }
+
+        var inputLength = input.length;
+        for (let i = 0; i < input.length; i++) {
+            var element = input[i];
+            if (element.length != inputLength) {
+                throw `element at position ${i} has not the required size. Each entry should be of size ${inputLength}`;
+            }
+            if (!/^[ATCG]+$/.test(element)) {
+                throw `element at position ${i} has letters not allowed. You can set strings only with these letters ATCG`;
+            }
+        }
+        return input;
+    },
+    isMutant: function(dna) {
+        let contiguosLettersCount = 4;
+        var horizontalPatterns = searchHorizontal(dna, contiguosLettersCount);
+        var verticalPatterns = searchVertical(dna, contiguosLettersCount);
+        var diagonalTopBottomPatterns = searchDiagonal(dna, false, contiguosLettersCount);
+        var diagonalBottomTopPatterns = searchDiagonal(dna, true, contiguosLettersCount);
+        return horizontalPatterns
+            .concat(verticalPatterns)
+            .concat(diagonalTopBottomPatterns)
+            .concat(diagonalBottomTopPatterns).length > 1;
+    }
 };
