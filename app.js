@@ -3,9 +3,9 @@ const express = require('express')
 const app = express()
 app.use(express.json());
 
-const port = 8080
+const port = process.env.PORT || 8080;
 const m = require('./module.js');
-const db = require("./data/database.js")
+const db = require('./db.js');
 
 var validateInput = m.validateInput;
 var isMutant = m.isMutant;
@@ -26,16 +26,11 @@ app.post('/mutant', function(req, res) {
 
 
         /* Insert to database */
-        var data = {
-            data: JSON.stringify(input),
-            is_mutant: result
-        }
-
-        var sql = 'INSERT INTO verifications (data, is_mutant) VALUES (?,?)'
-        var params = [data.data, data.is_mutant]
-        db.run(sql, params, function(err, result) {
-            console.log(err);
-        });
+        db.query('INSERT INTO verifications (input, is_mutant) VALUES ($1, $2)', [JSON.stringify(input), result], (error, results) => {
+            if (error) {
+                console.log(error);
+            }
+        })
 
         return isMutant ?
             res.sendStatus(200) :
@@ -48,14 +43,15 @@ app.post('/mutant', function(req, res) {
 });
 
 app.get('/stats', function(req, res) {
-    var sql = "select SUM(CASE WHEN is_mutant = 1 THEN 1 ELSE 0 END) AS count_mutant_dna, SUM(CASE WHEN is_mutant = 0 THEN 1 ELSE 0 END) AS count_human_dna from verifications"
-    var params = []
-    db.all(sql, params, (err, rows) => {
-        if (err) {
-            res.status(400).json({ "error": err.message });
-            return;
+    var sql = `select 
+                  SUM(CASE WHEN verifications.is_mutant = true THEN 1 ELSE 0 END) AS count_mutant_dna, 
+                  SUM(CASE WHEN verifications.is_mutant = false THEN 1 ELSE 0 END) AS count_human_dna 
+               from public.verifications`;
+    db.query(sql, (error, result) => {
+        if (error) {
+            throw error
         }
-        var row = rows[0];
+        var row = result.rows[0];
         var total = row.count_mutant_dna + row.count_human_dna;
         var ratio = row.count_mutant_dna / total;
         res.json({

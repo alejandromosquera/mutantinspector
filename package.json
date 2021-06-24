@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "nodemon app.js"
+        "start": "node app.js"
     },
     "repository": {
         "type": "git",
@@ -18,7 +18,7 @@
     "homepage": "https://github.com/alejandromosquera/mutantinspector#readme",
     "dependencies": {
         "express": "^4.17.1",
-        "sqlite3": "^5.0.2"
+        "pg-promise": "^10.10.2"
     },
     "devDependencies": {
         "mocha": "^9.0.1",
