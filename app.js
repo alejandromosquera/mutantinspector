@@ -32,9 +32,9 @@ app.post('/mutant', function(req, res) {
             }
         })
 
-        return isMutant ?
+        return result ?
             res.sendStatus(200) :
-            res.sendStatus(400)
+            res.sendStatus(403)
     } catch (err) {
         res.status(500).send({
             message: err
